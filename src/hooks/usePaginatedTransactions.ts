@@ -21,7 +21,7 @@ export function usePaginatedTransactions(): PaginatedTransactionsResult {
     });
 
     setPaginatedTransactions((previousResponse) => {
-      if (response === null || previousResponse === null) {
+      if (!response || !previousResponse) {
         return response;
       }
       return {
