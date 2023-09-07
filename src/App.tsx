@@ -9,7 +9,11 @@ import { EMPTY_EMPLOYEE } from "./utils/constants";
 import { Employee } from "./utils/types";
 
 export function App() {
-  const { data: employees, ...employeeUtils } = useEmployees();
+  const {
+    data: employees,
+    loading: employeesLoading,
+    ...employeeUtils
+  } = useEmployees();
   const { data: paginatedTransactions, ...paginatedTransactionsUtils } =
     usePaginatedTransactions();
   const { data: transactionsByEmployee, ...transactionsByEmployeeUtils } =
@@ -26,8 +30,9 @@ export function App() {
     transactionsByEmployeeUtils.invalidateData();
 
     await employeeUtils.fetchAll();
-    setIsLoading(false);
+
     await paginatedTransactionsUtils.fetchAll();
+    setIsLoading(false);
   }, [employeeUtils, paginatedTransactionsUtils, transactionsByEmployeeUtils]);
 
   const loadTransactionsByEmployee = useCallback(
@@ -39,10 +44,10 @@ export function App() {
   );
 
   useEffect(() => {
-    if (employees === null && !employeeUtils.loading) {
+    if (employees === null && !isLoading) {
       loadAllTransactions();
     }
-  }, [employeeUtils.loading, employees, loadAllTransactions]);
+  }, [employees, loadAllTransactions, isLoading]);
 
   return (
     <Fragment>
@@ -52,7 +57,7 @@ export function App() {
         <hr className="RampBreak--l" />
 
         <InputSelect<Employee>
-          isLoading={isLoading}
+          isLoading={employeesLoading}
           defaultValue={EMPTY_EMPLOYEE}
           items={employees === null ? [] : [EMPTY_EMPLOYEE, ...employees]}
           label="Filter by employee"
